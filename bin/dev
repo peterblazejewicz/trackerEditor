@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# remove previous build folder
+rm -R build
+# make build folder
+mkdir build
+# make css folder in the build folder
+mkdir build/css
+# create empty main.css file that way our browser sync can watch it
+touch build/css/style.css
+# make js folder in the build folder
+mkdir build/js
+# create empty app.js file that way our browser sync can watch it
+touch build/js/app.js
+
+# copy index.html from src to build folder
+cp src/index.html build/index.html
+
+
+
+# Run the next commands together with & and keep all processes in the foreground with && fg
+# browserify and watch with watchify, transform with babelify from es2015 & react to es5
+node_modules/.bin/watchify -e src/js/app.jsx -o "build/js/app.js" -d -v -t [ babelify --presets [ es2015 react ] ] &
+
+# convert our scss file to css and place it in the build folder
+node_modules/.bin/node-sass src/sass/style.scss build/css/style.css --source-map true
+# watch scss file and rebuild to css if changed
+node_modules/.bin/node-sass -w src/sass/style.scss build/css/style.css --source-map true &
+# start browser-sync to serve from the build folder and reload our browser when a file in the build map changes.
+node_modules/.bin/browser-sync start --files "build/css/*.css, build/js/*.js" --server build && fg
