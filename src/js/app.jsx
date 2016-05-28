@@ -12,7 +12,7 @@ const muiTheme = getMuiTheme();
 render(
 	<MuiThemeProvider muiTheme={muiTheme}>
 		<div>
-			<h1><FontIcon className="material-icons">graphic_eq</FontIcon>Tracker editor</h1>
+			<h1><FontIcon className="material-icons">graphic_eq</FontIcon>Tracker editor <img src='http://i.giphy.com/Vg3c7Z8eXBZUQ.gif' width={100} style={{margin:'-40px 0'}}/></h1>
 			<TrackerTable />
 		</div>
 	</MuiThemeProvider>
