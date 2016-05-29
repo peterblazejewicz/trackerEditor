@@ -28,6 +28,7 @@ class NoteRow extends Component {
 		}
 		this.setTone = this.setTone.bind(this);
 		this.moveOctave = this.moveOctave.bind(this);
+		this.connectWithNext = this.connectWithNext.bind(this);
 	}
 	setTone (e) {
 		e.note = this.state.note
@@ -36,6 +37,14 @@ class NoteRow extends Component {
 	}
 	moveOctave (add) {
 		this.props.moveOctave(add);
+	}
+	connectWithNext (tick,e) {
+		e.stopPropagation();
+		this.props.connectNoteWithNext({
+			note: this.state.note,
+			octave: this.props.currentOctave,
+			tick: tick.tick
+		})
 	}
 	render () {
 
@@ -49,27 +58,75 @@ class NoteRow extends Component {
 				<th>{this.state.note}{this.props.currentOctave}</th>
 				{ticksArray.map((x) => {
 					let cellClass = 'toneNotSet';
-					const trackTick = that.props.track[x]
-					if (trackTick) {
-						if (trackTick.note === that.state.note && this.props.currentOctave === trackTick.octave) {
-							cellClass= 'toneSet'
-						}
-						cellClass = cellClass + ' colSet'
-					}
+
+					let canConnectWithNext = false;
+					let duration = 0;
+					const trackTick = that.props.track[x];
+
 					if (this.state.note.indexOf('#') > 0) {
 						cellClass = cellClass + ' sharp';
 					}
+
+					if (trackTick) {
+						console.log(trackTick.duration)
+						const trackTickDuration = trackTick.duration || 1;
+						const nextTrackTick = that.props.track[x+trackTickDuration];
+						if (trackTick.note === that.state.note && this.props.currentOctave === trackTick.octave) {
+							cellClass= 'toneSet';
+							if (nextTrackTick && trackTick) {
+								if (nextTrackTick.note === trackTick.note && nextTrackTick.octave === trackTick.octave) {
+									// add connector between two notes
+									canConnectWithNext = true;
+								}
+							}
+							duration = trackTick.duration
+						} else {
+							duration = 1
+						}
+
+						cellClass = cellClass + ' colSet'
+
+						if (trackTick.duration !== -1 || duration === 1) {
+							return (
+								<NoteCell colSpan={duration} cellClass={cellClass} key={x + this.props.currentOctave} tick={x} clickOnCell={that.setTone} canConnectWithNext={canConnectWithNext} connectWithNext={this.connectWithNext}/>
+							)
+						} else {
+							return (null)
+						}
+					}
 					return (
-						<NoteCell cellClass={cellClass} key={x + this.props.currentOctave} tick={x} clickOnCell={that.setTone} />
+						<NoteCell colSpan={1} cellClass={cellClass} key={x + this.props.currentOctave} tick={x} clickOnCell={that.setTone} canConnectWithNext={canConnectWithNext} connectWithNext={this.connectWithNext}/>
 					)
+					
+					
+					
+					
 				})}
 			</tr>
 		)
 	}
 }
 
-const NoteCell = (props) => {
-	return <td className={props.cellClass} onClick={props.clickOnCell.bind(null,{tick: props.tick})}></td>
+class NoteCell extends Component{
+	constructor (props) {
+		super(props);
+		this.state = {
+			showConnect: false
+		}
+		this.showConnect = this.showConnect.bind(this);
+	}
+	showConnect () {
+		this.setState({
+			showConnect: !this.state.showConnect
+		})
+	}
+	render () {
+		return <td colSpan={this.props.colSpan} className={this.props.cellClass} onMouseEnter={this.showConnect} onMouseLeave={this.showConnect} onClick={this.props.clickOnCell.bind(null,{tick: this.props.tick})}>
+			{this.props.canConnectWithNext && this.state.showConnect?
+				<ConnectWithNext connectWithNext={this.props.connectWithNext.bind(null,{tick: this.props.tick})}/>
+				:null}
+		</td>
+	}
 }
 
 const Up = (props) => {
@@ -79,4 +136,10 @@ const Up = (props) => {
 }
 const Down = (props) => {
 	return <td rowSpan="5" onClick={props.moveOctave}><IconButton><FontIcon className="material-icons">arrow_downward</FontIcon></IconButton></td>
+}
+
+const ConnectWithNext = (props) => {
+	return <div className="connectable">
+		<button onClick={props.connectWithNext}>+</button>
+	</div>
 }

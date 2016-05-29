@@ -21,26 +21,72 @@ export default class TrackerTable extends Component {
 		this.setTone = this.setTone.bind(this);
 		this.moveOctave = this.moveOctave.bind(this);
 		this.playTrack = this.playTrack.bind(this);
+		this.connectNoteWithNext = this.connectNoteWithNext.bind(this);
 	}
 	setTone (obj) {
 		var track = this.state.track.slice()
 
 		if (track[obj.tick]) {
 			if (track[obj.tick].note === obj.note && track[obj.tick].octave === obj.octave) {
-				track[obj.tick] = null
+				if (track[obj.tick].duration) {
+					for (var i = 1; i < track[obj.tick].duration; i++) {
+						track[obj.tick+1].duration = 0
+					}
+				}
+				track[obj.tick] = null;
 			} else {
+				if (track[obj.tick].duration && track[obj.tick].duration > 0) {
+					for (var i = 1; i < track[obj.tick].duration; i++) {
+						track[obj.tick+1].duration = 0
+					}
+				} else if (track[obj.tick].duration && track[obj.tick].duration === -1) {
+					let position = 1;
+					while (track[obj.tick-position].duration === -1) {
+						track[obj.tick-position].duration = 0
+						position++;
+					}
+					track[obj.tick-position].duration = 0
+					position = 1
+					while (track[obj.tick + position] && track[obj.tick + position].duration === -1) {
+						track[obj.tick + position].duration = 0
+						position++;
+					}
+				}
 				track[obj.tick] = {
 					note: obj.note,
 					octave: obj.octave
 				}
 			}
-			
 		} else {
 			track[obj.tick] = {
 				note: obj.note,
 				octave: obj.octave
 			}
 		}
+
+		this.setState({
+			track
+		})
+	}
+	connectNoteWithNext(obj) {
+		const track = this.state.track.slice()
+		let currentTrack = track[obj.tick];
+		let currentDuration = currentTrack.duration || 1
+		let nextTrack = track[obj.tick + currentDuration]
+
+		if (currentTrack && nextTrack) {
+			if (currentTrack.note === nextTrack.note && currentTrack.octave === nextTrack.octave) {
+				let duration = currentTrack.duration || nextTrack.duration || 1;
+				if (currentTrack.duration > 0 && nextTrack.duration > 0) {
+					duration = currentTrack.duration + nextTrack.duration -1;
+				}
+				currentTrack.note = obj.note;
+				currentTrack.octave = obj.octave;
+				currentTrack.duration =  duration +1;
+				nextTrack.duration = -1
+			}
+			
+		} 
 
 		this.setState({
 			track
@@ -118,7 +164,7 @@ export default class TrackerTable extends Component {
 				<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<FontIcon className="material-icons">play_arrow</FontIcon>}/>
 				<table>
 						<ShowNotes {...state} show='low'/>
-						<NoteRows {...state} setTone={this.setTone} moveOctave={this.moveOctave}/>
+						<NoteRows {...state} setTone={this.setTone} moveOctave={this.moveOctave} connectNoteWithNext={this.connectNoteWithNext}/>
 						<ShowNotes {...state} show='high'/>
 						{//<FxRows fx={this.state.fx} ticks={this.state.ticks} setFx={this.setFx} />
 					}

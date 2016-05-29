@@ -52,6 +52,14 @@ body {
 	background-color: lighten(#FF2500,10%);
 	color: #fff;
 	cursor: pointer;
+	position: relative;
+	.connectable{
+		position: relative;
+	    right: 10px;
+	    z-index: 200;
+	    width: 0px;
+	    float: right;
+	}
 }
 .headerNotes{
 	font-size: 12px;
