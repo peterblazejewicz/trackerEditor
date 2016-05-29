@@ -3,7 +3,7 @@ import NoteRows from './noteRows.jsx';
 import FxRows from './fxRows.jsx';
 import ShowNotes from './showNotes.jsx';
 import RaisedButton from 'material-ui/RaisedButton';
-import FontIcon from 'material-ui/FontIcon';
+import PlayArrow from 'material-ui/svg-icons/av/play-arrow';
 
 export default class TrackerTable extends Component {
 	constructor (props) {
@@ -22,6 +22,7 @@ export default class TrackerTable extends Component {
 		this.moveOctave = this.moveOctave.bind(this);
 		this.playTrack = this.playTrack.bind(this);
 		this.connectNoteWithNext = this.connectNoteWithNext.bind(this);
+		this.setTicks = this.setTicks.bind(this);
 	}
 	setTone (obj) {
 		var track = this.state.track.slice()
@@ -157,11 +158,16 @@ export default class TrackerTable extends Component {
 			index++
 		},400)
 	}
+	setTicks () {
+		this.setState({
+			ticks: this.refs.ticks.value
+		})
+	}
 	render () {
 		var state = this.state
 		return (
 			<div>
-				<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<FontIcon className="material-icons">play_arrow</FontIcon>}/>
+				<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<PlayArrow/>}/>
 				<table>
 						<ShowNotes {...state} show='low'/>
 						<NoteRows {...state} setTone={this.setTone} moveOctave={this.moveOctave} connectNoteWithNext={this.connectNoteWithNext}/>

@@ -32,10 +32,14 @@ body {
   background-color: #ffa899;
   cursor: pointer; }
   .toneNotSet.sharp {
+    width: 20px;
+    height: 20px;
     background-color: #e0beb8; }
     .toneNotSet.sharp.colSet {
       background-color: #ffa899; }
   .toneNotSet.colSet {
+    width: 20px;
+    height: 20px;
     background-color: #ff9280; }
 
 .toneSet {
@@ -47,10 +51,19 @@ body {
   position: relative; }
   .toneSet .connectable {
     position: relative;
-    right: 10px;
+    right: 8px;
     z-index: 200;
     width: 0px;
-    float: right; }
+    float: right;
+    height: 18px; }
+    .toneSet .connectable button {
+      height: 18px;
+      width: 20px;
+      padding: 1px;
+      margin: 0; }
+      .toneSet .connectable button svg {
+        height: 15px !important;
+        width: 15px !important; }
 
 .headerNotes {
   font-size: 12px; }

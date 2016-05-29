@@ -36,12 +36,16 @@ body {
 	background-color: lighten(#FF2500,30%);
 	cursor: pointer;
 	&.sharp{
+		width:20px;
+		height:20px;
 		background-color: desaturate(lighten(#FF2500,30%),60%);
 		&.colSet{
 		background-color: saturate(lighten(#FF2500,30%),30%);
 	}
 	}
 	&.colSet{
+		width:20px;
+		height:20px;
 		background-color: saturate(lighten(#FF2500,25%),80%);
 	}
 }
@@ -55,10 +59,21 @@ body {
 	position: relative;
 	.connectable{
 		position: relative;
-	    right: 10px;
+	    right: 8px;
 	    z-index: 200;
 	    width: 0px;
 	    float: right;
+	    height: 18px;
+	    button {
+	    	height: 18px;
+		    width: 20px;
+		    padding: 1px;
+		    margin: 0;
+	    	svg{
+		    	height: 15px !important;
+		    	width: 15px !important;
+		    }
+	    }
 	}
 }
 .headerNotes{

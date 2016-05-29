@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import IconButton from 'material-ui/IconButton';
-import FontIcon from 'material-ui/FontIcon';
+import ArrowUp from 'material-ui/svg-icons/navigation/arrow-upward';
+import ArrowDown from 'material-ui/svg-icons/navigation/arrow-downward';
+import LinkIcon from 'material-ui/svg-icons/content/link';
 
 export default class NoteRows extends Component{
 	constructor (props) {
@@ -131,15 +133,15 @@ class NoteCell extends Component{
 
 const Up = (props) => {
 	return <td rowSpan="5" onClick={props.moveOctave}>
-		<IconButton><FontIcon  className="material-icons">arrow_upward</FontIcon></IconButton>
+		<IconButton><ArrowUp/></IconButton>
 		</td>
 }
 const Down = (props) => {
-	return <td rowSpan="5" onClick={props.moveOctave}><IconButton><FontIcon className="material-icons">arrow_downward</FontIcon></IconButton></td>
+	return <td rowSpan="5" onClick={props.moveOctave}><IconButton><ArrowDown/></IconButton></td>
 }
 
 const ConnectWithNext = (props) => {
 	return <div className="connectable">
-		<button onClick={props.connectWithNext}>+</button>
+		<button mini={true} onClick={props.connectWithNext}><LinkIcon/></button>
 	</div>
 }
