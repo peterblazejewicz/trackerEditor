@@ -23,9 +23,6 @@
 html {
   font-family: 'Roboto', sans-serif; }
 
-body {
-  margin: 0; }
-
 .toneNotSet {
   width: 20px;
   height: 20px;
@@ -66,6 +63,15 @@ body {
         width: 15px !important; }
 
 .headerNotes {
-  font-size: 12px; }
+  font-size: 10px; }
+  .headerNotes.active {
+    background-color: #dadada; }
+
+.ATMTrack {
+  margin: 30px;
+  padding: 10px;
+  font-family: monospace;
+  background-color: aliceblue;
+  color: #5d5f61; }
 
 /*# sourceMappingURL=style.css.map */

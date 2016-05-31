@@ -70,7 +70,6 @@ class NoteRow extends Component {
 					}
 
 					if (trackTick) {
-						console.log(trackTick.duration)
 						const trackTickDuration = trackTick.duration || 1;
 						const nextTrackTick = that.props.track[x+trackTickDuration];
 						if (trackTick.note === that.state.note && this.props.currentOctave === trackTick.octave) {

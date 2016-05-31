@@ -14,7 +14,7 @@ export default class TrackerTable extends Component {
 			currentOctave: 6,
 			ticks : 64,
 			fx: ["volume"],
-			track: Array.apply(null, Array(64)).map(function (x, i) { return null; }),
+			track: props.track || Array.apply(null, Array(64)).map(function (x, i) { return null; }),
 			currentPlayingTick: null
 		}
 		this.setFx = this.setFx.bind(this);
@@ -66,7 +66,8 @@ export default class TrackerTable extends Component {
 		}
 
 		this.setState({
-			track
+			track,
+			ATM: makeATMTrack(track,this.state.ticks)
 		})
 	}
 	connectNoteWithNext(obj) {
@@ -87,10 +88,11 @@ export default class TrackerTable extends Component {
 				nextTrack.duration = -1
 			}
 			
-		} 
+		}
 
 		this.setState({
-			track
+			track,
+			ATM: makeATMTrack(track,this.state.ticks)
 		})
 	}
 	moveOctave (add) {
@@ -159,15 +161,24 @@ export default class TrackerTable extends Component {
 		},400)
 	}
 	setTicks () {
+		let ticks = parseInt(this.refs.ticks.value);
+		ticks = (ticks < 4 || isNaN(ticks))? 4:ticks;
+		ticks = (ticks > 64)? 64:ticks;
+
 		this.setState({
-			ticks: this.refs.ticks.value
+			ticks: ticks,
+			ATM: makeATMTrack(this.state.track,this.state.ticks)
 		})
 	}
 	render () {
 		var state = this.state
 		return (
 			<div>
-				<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<PlayArrow/>}/>
+				{/*<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<PlayArrow/>}/>*/}
+				<label>
+					Track ticks:
+					<input ref='ticks' type='number' onChange={this.setTicks} value={state.ticks} min="4" max={state.track.length}/>
+				</label>
 				<table>
 						<ShowNotes {...state} show='low'/>
 						<NoteRows {...state} setTone={this.setTone} moveOctave={this.moveOctave} connectNoteWithNext={this.connectNoteWithNext}/>
@@ -175,7 +186,65 @@ export default class TrackerTable extends Component {
 						{//<FxRows fx={this.state.fx} ticks={this.state.ticks} setFx={this.setFx} />
 					}
 				</table>
+				<ATMTrack AMT={this.state.ATM}/>
 			</div>
 		)
 	}
 }
+
+const ATMTrack = (props) => {
+	return <div>
+		<h3>ATM Track</h3>
+		<p className="ATMTrack">{JSON.stringify(props.AMT)}</p>
+	</div>
+}
+
+function makeATMTrack(track, ticks) {
+	ticks = ticks || 64;
+	const notes = ["C","C#","D","D#","E","F","G","G#","A","A#","B"];
+
+	function searchStringInArray (str, strArray) {
+	    for (var j=0; j<strArray.length; j++) {
+	        if (strArray[j].match(str)) return j;
+	    }
+	    return -1;
+	}
+		   
+
+	const ATMTrack = [];
+	ATMTrack.push("Track");
+	let i = 0;
+	while (i < ticks) {
+		const tick = track[i]
+		if (tick) {
+			let duration = 1
+			if (tick.duration && tick.duration > 0) {
+				duration = tick.duration
+			}
+    		const pos = searchStringInArray(tick.note, notes);
+			const tone = ((tick.octave - 4) * notes.length) + pos;
+			ATMTrack.push(tone); 				// 0x00 + tone NOTE ON
+			ATMTrack.push(159+duration);		// 0x9F + duration
+			ATMTrack.push(63);					// 0x3F NOTE OFF
+			i = i + duration;
+		} else {
+			let delayLength = 1;
+			let done = true;
+			while (done) {
+				if(track[i+delayLength] || i+delayLength === ticks) {
+					done = false
+				} else {
+					delayLength++
+				}
+			}
+			i = i + delayLength;
+			ATMTrack.push(159+delayLength);
+		}
+
+	}
+	ATMTrack.push(254); // return
+	return ATMTrack
+}
+	
+
+
