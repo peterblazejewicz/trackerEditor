@@ -4,18 +4,22 @@ import FxRows from './fxRows.jsx';
 import ShowNotes from './showNotes.jsx';
 import RaisedButton from 'material-ui/RaisedButton';
 import PlayArrow from 'material-ui/svg-icons/av/play-arrow';
+import TextField from 'material-ui/TextField';
+
 
 export default class TrackerTable extends Component {
 	constructor (props) {
 		super(props);
+		console.log(props.selectedTrack)
 		this.state = {
 			notes : ["C","C#","D","D#","E","F","G","G#","A","A#","B"],
 			octaves : [4,5,6,7,8],
 			currentOctave: 6,
-			ticks : 64,
+			ticks : props.selectedTrack.ticks || 64,
 			fx: ["volume"],
-			track: props.track || Array.apply(null, Array(64)).map(function (x, i) { return null; }),
-			currentPlayingTick: null
+			track: props.selectedTrack.track || Array.apply(null, Array(64)).map(function (x, i) { return null; }),
+			currentPlayingTick: null,
+			trackName: props.selectedTrack.trackName || '#'
 		}
 		this.setFx = this.setFx.bind(this);
 		this.setTone = this.setTone.bind(this);
@@ -23,6 +27,16 @@ export default class TrackerTable extends Component {
 		this.playTrack = this.playTrack.bind(this);
 		this.connectNoteWithNext = this.connectNoteWithNext.bind(this);
 		this.setTicks = this.setTicks.bind(this);
+		this.setName = this.setName.bind(this);
+	}
+	componentWillReceiveProps (nextProps) {
+		const selectedTrack = nextProps.selectedTrack
+		this.setState({
+			ticks: selectedTrack.ticks,
+			trackName: selectedTrack.trackName,
+			track: selectedTrack.track,
+			ATM: selectedTrack.ATM || ''
+		})
 	}
 	setTone (obj) {
 		var track = this.state.track.slice()
@@ -64,10 +78,13 @@ export default class TrackerTable extends Component {
 				octave: obj.octave
 			}
 		}
+		const ATM = makeATMTrack(track,this.state.ticks)
+
+		this.props.setSelectedTrack({track,ATM});
 
 		this.setState({
 			track,
-			ATM: makeATMTrack(track,this.state.ticks)
+			ATM
 		})
 	}
 	connectNoteWithNext(obj) {
@@ -89,10 +106,13 @@ export default class TrackerTable extends Component {
 			}
 			
 		}
+		const ATM = makeATMTrack(track,this.state.ticks);
+
+		this.props.setSelectedTrack({track,ATM});
 
 		this.setState({
 			track,
-			ATM: makeATMTrack(track,this.state.ticks)
+			ATM
 		})
 	}
 	moveOctave (add) {
@@ -160,25 +180,50 @@ export default class TrackerTable extends Component {
 			index++
 		},400)
 	}
-	setTicks () {
-		let ticks = parseInt(this.refs.ticks.value);
-		ticks = (ticks < 4 || isNaN(ticks))? 4:ticks;
+	setTicks (e, value) {
+		let ticks = parseInt(value);
 		ticks = (ticks > 64)? 64:ticks;
 
+		if (ticks > 0 && ticks <= 64) {
+			const ATM = makeATMTrack(this.state.track,this.state.ticks)
+
+			this.props.setSelectedTrack({ticks,ATM});
+
+			this.setState({
+				ticks,
+				ATM
+			})
+		}
+
+		
+	}
+	setName (e, value) {
+		const trackName = value
+
+		this.props.setSelectedTrack({trackName});
+
 		this.setState({
-			ticks: ticks,
-			ATM: makeATMTrack(this.state.track,this.state.ticks)
+			trackName: trackName
 		})
 	}
 	render () {
 		var state = this.state
 		return (
 			<div>
+				<h2>Track Editor</h2>
 				{/*<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<PlayArrow/>}/>*/}
-				<label>
-					Track ticks:
-					<input ref='ticks' type='number' onChange={this.setTicks} value={state.ticks} min="4" max={state.track.length}/>
-				</label>
+				<div style={{marginLeft:'88px'}}><TextField
+			      	hintText="Track ##"
+			      	floatingLabelText="Track name"
+			      	onChange={this.setName}
+			      	value={state.trackName}
+			    /><br/>
+			    <TextField
+			    	ref='ticks (min 4, max 64)'
+			      	floatingLabelText="Track ticks"
+			      	value={state.ticks}
+			      	onChange={this.setTicks}
+			    /></div>
 				<table>
 						<ShowNotes {...state} show='low'/>
 						<NoteRows {...state} setTone={this.setTone} moveOctave={this.moveOctave} connectNoteWithNext={this.connectNoteWithNext}/>
@@ -193,7 +238,7 @@ export default class TrackerTable extends Component {
 }
 
 const ATMTrack = (props) => {
-	return <div>
+	return <div style={{marginLeft:'88px'}}>
 		<h3>ATM Track</h3>
 		<p className="ATMTrack">{JSON.stringify(props.AMT)}</p>
 	</div>
