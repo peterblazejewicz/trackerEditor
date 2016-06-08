@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TrackerTable from '../trackerTable/trackerTable.jsx';
+import Channels from '../channels/channels'
+
 import {List, ListItem} from 'material-ui/List';
 import EmptyLabel from 'material-ui/svg-icons/action/label-outline'
 import Label from 'material-ui/svg-icons/action/label'
@@ -10,6 +12,12 @@ export default class TrackStore extends Component{
 		super(props);
 		this.state = {
 			tracksList: [{
+				selected: false,
+				ticks:1,
+				track: [null],
+				trackName: "SilentTick",
+				ATM : ["Track",160,254]
+			},{
 				selected:true,
 				ticks:64,
 				track:Array.apply(null, Array(64)).map(function (x, i) { return null; }),
@@ -74,6 +82,7 @@ export default class TrackStore extends Component{
 		const state = this.state
 		return (
 			<div>
+				<Channels {...state}/>
 				<h2>Tracks List</h2>
 				<RaisedButton label="New Track" primary={true} onClick={this.addTrack}/>
 				<List>
