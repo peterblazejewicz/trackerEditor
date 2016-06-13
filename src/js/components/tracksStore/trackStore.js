@@ -16,12 +16,14 @@ export default class TrackStore extends Component{
 				ticks:1,
 				track: [null],
 				trackName: "SilentTick",
+				color: 'hsl(0,60%,40%)',
 				ATM : ["Track",160,254]
 			},{
 				selected:true,
 				ticks:64,
 				track:Array.apply(null, Array(64)).map(function (x, i) { return null; }),
 				trackName : '#',
+				color: 'hsl(132,60%,42%)',
 				ATM: []
 			}]
 		}
@@ -41,6 +43,7 @@ export default class TrackStore extends Component{
 			ticks:64,
 			track:Array.apply(null, Array(64)).map(function (x, i) { return null; }),
 			trackName : '#',
+			color: 'hsl('+ (tracksList.length * 132)%360 +',60%,' + (40+ (tracksList.length *2))+'%)',
 			ATM: []
 		})
 		this.setState({
@@ -87,8 +90,8 @@ export default class TrackStore extends Component{
 				<RaisedButton label="New Track" primary={true} onClick={this.addTrack}/>
 				<List>
 					{state.tracksList.map((track, i) => {
-						const select = track.selected? <Label/>:<EmptyLabel/>;
-						return <ListItem leftIcon={select} key={i} primaryText ={track.trackName + ' ('+ track.ticks+')'} onClick={this.selectTrack.bind(this,i)} />
+						const select = track.selected? <Label style={{fill:track.color}}/>:<EmptyLabel style={{fill:track.color}}/>;
+						return <ListItem style={{color:track.color}} leftIcon={select} key={i} primaryText ={track.trackName + ' ('+ track.ticks+')'} onClick={this.selectTrack.bind(this,i)} />
 					})}
 				</List>
 				<TrackerTable setSelectedTrack={this.setSelectedTrack} selectedTrack={this.selectedTrack()}/>

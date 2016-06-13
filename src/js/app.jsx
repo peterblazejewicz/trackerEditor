@@ -15,7 +15,6 @@ render(
 	<MuiThemeProvider muiTheme={muiTheme}>
 		<div>
 			<h1><Equaliser/>Tracker editor <img src='http://i.giphy.com/Vg3c7Z8eXBZUQ.gif' width={100} style={{margin:'-40px 0'}}/></h1>
-			
 			<TrackStore/>
 		</div>
 	</MuiThemeProvider>
