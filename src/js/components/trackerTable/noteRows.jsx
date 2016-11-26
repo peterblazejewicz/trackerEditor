@@ -56,6 +56,7 @@ class NoteRow extends Component {
 			<tr>
 				{this.state.note === "C"? <Up moveOctave={this.props.moveOctave.bind(this,-1)}/>:null}
 				{this.state.note === "F"? <td></td>:null}
+				{this.state.note === "F#"? <td></td>:null}
 				{this.state.note === "G"? <Down moveOctave={this.props.moveOctave.bind(this,1)}/>:null}
 				<th>{this.state.note}{this.props.currentOctave}</th>
 				{ticksArray.map((x) => {

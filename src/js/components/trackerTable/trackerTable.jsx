@@ -12,7 +12,7 @@ export default class TrackerTable extends Component {
 		super(props);
 		console.log(props.selectedTrack)
 		this.state = {
-			notes : ["C","C#","D","D#","E","F","G","G#","A","A#","B"],
+			notes : ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],
 			octaves : [4,5,6,7,8],
 			currentOctave: 6,
 			ticks : props.selectedTrack.ticks || 64,
@@ -131,12 +131,13 @@ export default class TrackerTable extends Component {
 	}
 	playTrack () {
 		var noteTable = [
+			    0,
 		   262,  277,  294,  311,  330,  349,  370,  392,  415,  440,  466,  494,
 		   523,  554,  587,  622,  659,  698,  740,  784,  831,  880,  932,  988,
 		  1047, 1109, 1175, 1245, 1319, 1397, 1480, 1568, 1661, 1760, 1865, 1976,
 		  2093, 2217, 2349, 2489, 2637, 2794, 2960, 3136, 3322, 3520, 3729, 3951,
 		  4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040, 7459, 7902,
-		  8372, 8870, 9397,    0, 
+		  8372, 8870, 9397 
 		];
 
 		var notes = this.state.notes;
@@ -211,7 +212,7 @@ export default class TrackerTable extends Component {
 		return (
 			<div>
 				<h2>Track Editor</h2>
-				{/*<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<PlayArrow/>}/>*/}
+				<RaisedButton label="Play" onClick={this.playTrack} primary={true} icon={<PlayArrow/>}/>
 				<div style={{marginLeft:'88px'}}><TextField
 			      	hintText="Track ##"
 			      	floatingLabelText="Track name"
@@ -246,7 +247,7 @@ const ATMTrack = (props) => {
 
 function makeATMTrack(track, ticks) {
 	ticks = ticks || 64;
-	const notes = ["C","C#","D","D#","E","F","G","G#","A","A#","B"];
+	const notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 
 	function searchStringInArray (str, strArray) {
 	    for (var j=0; j<strArray.length; j++) {
@@ -270,7 +271,7 @@ function makeATMTrack(track, ticks) {
 			const tone = ((tick.octave - 4) * notes.length) + pos;
 			ATMTrack.push(tone); 				// 0x00 + tone NOTE ON
 			ATMTrack.push(159+duration);		// 0x9F + duration
-			ATMTrack.push(63);					// 0x3F NOTE OFF
+			ATMTrack.push(0);					// 0x3F NOTE OFF
 			i = i + duration;
 		} else {
 			let delayLength = 1;
