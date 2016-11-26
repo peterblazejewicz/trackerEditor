@@ -182,10 +182,12 @@ export default class TrackerTable extends Component {
 		},400)
 	}
 	setTicks (e, value) {
-		let ticks = parseInt(value);
-		ticks = (ticks > 64)? 64:ticks;
+		let ticks = parseInt(value)
+		ticks = (!ticks)? 0:ticks
+		ticks = (ticks > 64)? 64:ticks
 
-		if (ticks > 0 && ticks <= 64) {
+
+		if (ticks >= 0 && ticks <= 64) {
 			const ATM = makeATMTrack(this.state.track,this.state.ticks)
 
 			this.props.setSelectedTrack({ticks,ATM});
